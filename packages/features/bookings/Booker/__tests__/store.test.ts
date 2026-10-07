@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
-import { BookerLayouts } from "@calcom/prisma/zod-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { BookerLayouts } from "@calcom/prisma/zod-utils";
 
 import { createBookerStore } from "../store";
 
