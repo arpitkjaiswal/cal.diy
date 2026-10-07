@@ -8,7 +8,7 @@ import { createWithEqualityFn } from "zustand/traditional";
 import type { GetBookingType } from "../lib/get-booking";
 import type { BookerLayout, BookerState } from "./types";
 import { getQueryParam, removeQueryParam, updateQueryParam } from "./utils/query-param";
-import { getInitialBookerDateState, getValidDate, getValidMonth } from "./utils/validate-date";
+import { getInitialBookerDateState, getValidDate } from "./utils/validate-date";
 
 const _iso_3166_1_alpha_2_codes = [
   "ad",
@@ -638,8 +638,8 @@ export const createBookerStore = () => {
       if (rescheduleUid && bookingData) {
         set({ selectedTimeslot: null });
       }
-      const validMonth = getValidMonth(month);
-      if (validMonth) set({ month: validMonth });
+      const dateState = getInitialBookerDateState(month ?? get().month, selectedDateInStore);
+      set({ month: dateState.month });
 
       if (!isPlatform || allowUpdatingUrlParams) {
         const monthParam = getQueryParam("month");
