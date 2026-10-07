@@ -8,13 +8,15 @@ import { createBookerStore } from "../store";
 const initializeStore = (
   store: ReturnType<typeof createBookerStore>,
   isPlatform = false,
-  allowUpdatingUrlParams = true
+  allowUpdatingUrlParams = true,
+  month?: string
 ) => {
   store.getState().initialize({
     username: "pro",
     eventSlug: "30min",
     eventId: 1,
     layout: BookerLayouts.MONTH_VIEW,
+    month,
     isPlatform,
     allowUpdatingUrlParams,
   });
@@ -23,7 +25,7 @@ const initializeStore = (
 describe("Booker URL date parameters", () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-10-06T12:00:00.000Z"));
+    vi.setSystemTime(new Date(2026, 9, 6, 12));
     window.history.replaceState(null, "", "/pro/30min");
   });
 
@@ -48,6 +50,21 @@ describe("Booker URL date parameters", () => {
     const params = new URLSearchParams(window.location.search);
     expect(params.get("month")).toBe("2026-10");
     expect(params.has("date")).toBe(false);
+  });
+
+  it("preserves the selected date month when the initialized month is past", () => {
+    const search = "?month=2020-01&date=2027-01-01";
+    window.history.replaceState(null, "", "/pro/30min" + search);
+    const store = createBookerStore();
+
+    initializeStore(store, false, true, "2020-01");
+
+    expect(store.getState().month).toBe("2027-01");
+    expect(store.getState().selectedDate).toBe("2027-01-01");
+
+    const params = new URLSearchParams(window.location.search);
+    expect(params.get("month")).toBe("2027-01");
+    expect(params.get("date")).toBe("2027-01-01");
   });
 
   it("sanitizes state without rewriting embed URLs when updates are disabled", () => {
