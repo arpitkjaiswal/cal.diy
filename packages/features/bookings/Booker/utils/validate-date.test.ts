@@ -5,7 +5,7 @@ import { getInitialBookerDateState, getValidDate, getValidMonth } from "./valida
 describe("Booker date query validation", () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    vi.setSystemTime(new Date("2026-10-06T12:00:00.000Z"));
+    vi.setSystemTime(new Date(2026, 9, 6, 12));
   });
 
   afterEach(() => {
