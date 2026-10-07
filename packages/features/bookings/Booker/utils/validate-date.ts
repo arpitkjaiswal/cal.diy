@@ -13,7 +13,9 @@ export const getValidMonth = (monthParam: string | null | undefined): string | n
   if (!month?.isValid()) return null;
 
   const currentMonth = dayjs().startOf("month");
-  return month.isBefore(currentMonth) ? currentMonth.format(MONTH_FORMAT) : month.format(MONTH_FORMAT);
+  if (month.isBefore(currentMonth)) return currentMonth.format(MONTH_FORMAT);
+
+  return month.format(MONTH_FORMAT);
 };
 
 export const getValidDate = (dateParam: string | null | undefined): string | null => {
@@ -29,17 +31,15 @@ export const getInitialBookerDateState = (
   monthParam: string | null | undefined,
   dateParam: string | null | undefined
 ): { month: string; selectedDate: string | null } => {
-  const month = parseMonth(monthParam);
+  const monthParamValue = parseMonth(monthParam);
   const currentMonth = dayjs().startOf("month");
   const selectedDate = getValidDate(dateParam);
 
-  return {
-    month:
-      month?.isValid() && !month.isBefore(currentMonth)
-        ? month.format(MONTH_FORMAT)
-        : selectedDate
-          ? dayjs(selectedDate).format(MONTH_FORMAT)
-          : currentMonth.format(MONTH_FORMAT),
-    selectedDate,
-  };
+  let month = currentMonth.format(MONTH_FORMAT);
+  if (selectedDate) month = dayjs(selectedDate).format(MONTH_FORMAT);
+  if (monthParamValue?.isValid() && !monthParamValue.isBefore(currentMonth)) {
+    month = monthParamValue.format(MONTH_FORMAT);
+  }
+
+  return { month, selectedDate };
 };
